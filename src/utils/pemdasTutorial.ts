@@ -66,7 +66,7 @@ const generateNestedParenthesesEquation = () => {
       operation: "Parentheses (Inner)",
       description: `Calculate ${a} + ${b} inside the innermost parentheses`,
       expression: `( ${a} + ${b} )`,
-      rule: `PEMDAS starts with Parentheses, working from innermost to outermost. ${a} + ${b} = ${step1Result}`,
+      rule: "PEMDAS starts with Parentheses, working from innermost to outermost. Always solve expressions inside parentheses first.",
       result: step1Result
     },
     {
@@ -74,7 +74,7 @@ const generateNestedParenthesesEquation = () => {
       operation: "Exponent",
       description: `Calculate ${step1Result} raised to power ${c}`,
       expression: `${step1Result} ^ ${c}`,
-      rule: `After parentheses, we calculate exponents. ${step1Result} raised to power ${c} equals ${step2Result}.`,
+      rule: "After parentheses, we calculate exponents. This is the 'E' in PEMDAS.",
       result: step2Result
     },
     {
@@ -82,7 +82,7 @@ const generateNestedParenthesesEquation = () => {
       operation: "Division",
       description: `Divide ${step2Result} by ${d}`,
       expression: `${step2Result} ÷ ${d}`,
-      rule: `Next in PEMDAS is multiplication and division, from left to right. ${step2Result} ÷ ${d} = ${step3Result}`,
+      rule: "Next in PEMDAS is multiplication and division, from left to right. Since division appears first from left to right, we calculate it next.",
       result: step3Result
     },
     {
@@ -90,7 +90,7 @@ const generateNestedParenthesesEquation = () => {
       operation: "Subtraction",
       description: `Subtract ${e} from ${step3Result}`,
       expression: `${step3Result} - ${e}`,
-      rule: `Finally, we handle addition and subtraction from left to right. ${step3Result} - ${e} = ${finalResult}`,
+      rule: "Finally, we handle addition and subtraction from left to right. This is the last step in the PEMDAS sequence.",
       result: finalResult
     }
   ];
@@ -119,26 +119,26 @@ const generateExponentFirstEquation = () => {
   const steps: Step[] = [
     {
       id: "step1",
-      operation: "Exponent",
-      description: `Calculate ${a} raised to power ${b}`,
-      expression: `${a} ^ ${b}`,
-      rule: `After checking for parentheses, we calculate exponents. ${a} raised to power ${b} equals ${step1Result}.`,
-      result: step1Result
+      operation: "Parentheses",
+      description: `Calculate ${c} * ${d} inside the parentheses`,
+      expression: `( ${c} * ${d} )`,
+      rule: "PEMDAS begins with Parentheses. Even though there's an exponent elsewhere in the equation, we must first solve what's inside parentheses.",
+      result: step2Result
     },
     {
       id: "step2",
-      operation: "Parentheses/Multiplication",
-      description: `Calculate ${c} * ${d} inside the parentheses`,
-      expression: `( ${c} * ${d} )`,
-      rule: `Now we handle the expression inside parentheses. Since it's a simple multiplication, we get ${c} * ${d} = ${step2Result}`,
-      result: step2Result
+      operation: "Exponent",
+      description: `Calculate ${a} raised to power ${b}`,
+      expression: `${a} ^ ${b}`,
+      rule: "After handling parentheses, we move to Exponents. This is the second priority in the PEMDAS sequence.",
+      result: step1Result
     },
     {
       id: "step3",
       operation: "Addition",
       description: `Add ${step1Result} and ${step2Result}`,
       expression: `${step1Result} + ${step2Result}`,
-      rule: `After exponents and multiplication/division, we handle addition and subtraction from left to right. ${step1Result} + ${step2Result} = ${step3Result}`,
+      rule: "Next, we handle addition and subtraction from left to right. Since addition appears first, we calculate it first.",
       result: step3Result
     },
     {
@@ -146,7 +146,7 @@ const generateExponentFirstEquation = () => {
       operation: "Subtraction",
       description: `Subtract ${e} from ${step3Result}`,
       expression: `${step3Result} - ${e}`,
-      rule: `Finally, we continue with addition/subtraction from left to right. ${step3Result} - ${e} = ${finalResult}`,
+      rule: "Finally, we continue with addition/subtraction from left to right, completing the PEMDAS sequence.",
       result: finalResult
     }
   ];
@@ -166,52 +166,52 @@ const generateMultDivMixEquation = () => {
   const equation = `${a} ÷ ${b} * ( ${c} + ${d} ) - ${e} ^ 2`;
   
   // Calculate intermediate results
-  const step1Result = a / b;
-  const step2Result = c + d;
-  const step3Result = step1Result * step2Result;
-  const step4Result = Math.pow(e, 2);
-  const finalResult = step3Result - step4Result;
+  const step1Result = c + d;
+  const step2Result = Math.pow(e, 2);
+  const step3Result = a / b;
+  const step4Result = step3Result * step1Result;
+  const finalResult = step4Result - step2Result;
   
   // Define steps
   const steps: Step[] = [
     {
       id: "step1",
-      operation: "Division",
-      description: `Divide ${a} by ${b}`,
-      expression: `${a} ÷ ${b}`,
-      rule: `For multiplication and division, we work from left to right. Since division appears first, we calculate ${a} ÷ ${b} = ${step1Result}`,
+      operation: "Parentheses",
+      description: `Calculate ${c} + ${d} inside the parentheses`,
+      expression: `( ${c} + ${d} )`,
+      rule: "Following PEMDAS, we first solve expressions inside Parentheses. This is always the first priority.",
       result: step1Result
     },
     {
       id: "step2",
-      operation: "Parentheses/Addition",
-      description: `Calculate ${c} + ${d} inside the parentheses`,
-      expression: `( ${c} + ${d} )`,
-      rule: `Now we handle the expression inside parentheses. ${c} + ${d} = ${step2Result}`,
+      operation: "Exponent",
+      description: `Calculate ${e} squared`,
+      expression: `${e} ^ 2`,
+      rule: "Next in PEMDAS is Exponents. We calculate any terms with exponents before moving on to multiplication and division.",
       result: step2Result
     },
     {
       id: "step3",
-      operation: "Multiplication",
-      description: `Multiply ${step1Result} by ${step2Result}`,
-      expression: `${step1Result} * ${step2Result}`,
-      rule: `Continuing with multiplication from left to right. ${step1Result} * ${step2Result} = ${step3Result}`,
+      operation: "Division",
+      description: `Divide ${a} by ${b}`,
+      expression: `${a} ÷ ${b}`,
+      rule: "For multiplication and division, we work from left to right. Since division appears first from left to right, we calculate it next.",
       result: step3Result
     },
     {
       id: "step4",
-      operation: "Exponent",
-      description: `Calculate ${e} squared`,
-      expression: `${e} ^ 2`,
-      rule: `Next we calculate the exponent: ${e} squared equals ${step4Result}`,
+      operation: "Multiplication",
+      description: `Multiply ${step3Result} by ${step1Result}`,
+      expression: `${step3Result} * ${step1Result}`,
+      rule: "Continuing with multiplication/division from left to right. After division, we handle multiplication next.",
       result: step4Result
     },
     {
       id: "step5",
       operation: "Subtraction",
-      description: `Subtract ${step4Result} from ${step3Result}`,
-      expression: `${step3Result} - ${step4Result}`,
-      rule: `Finally, we handle subtraction: ${step3Result} - ${step4Result} = ${finalResult}`,
+      description: `Subtract ${step2Result} from ${step4Result}`,
+      expression: `${step4Result} - ${step2Result}`,
+      rule: "Finally, we handle addition and subtraction from left to right. This is the last step in the PEMDAS sequence.",
       result: finalResult
     }
   ];
@@ -231,43 +231,43 @@ const generateComplexAddSubEquation = () => {
   const equation = `${a} - ${b} * ${c} + ( ${d} ^ ${e} )`;
   
   // Calculate intermediate results
-  const step1Result = b * c;
-  const step2Result = Math.pow(d, e);
-  const step3Result = a - step1Result;
-  const finalResult = step3Result + step2Result;
+  const step1Result = Math.pow(d, e);
+  const step2Result = b * c;
+  const step3Result = a - step2Result;
+  const finalResult = step3Result + step1Result;
   
   // Define steps
   const steps: Step[] = [
     {
       id: "step1",
-      operation: "Multiplication",
-      description: `Multiply ${b} by ${c}`,
-      expression: `${b} * ${c}`,
-      rule: `Following PEMDAS, we handle multiplication before addition/subtraction. ${b} * ${c} = ${step1Result}`,
+      operation: "Parentheses/Exponent",
+      description: `Calculate ${d} raised to power ${e} inside the parentheses`,
+      expression: `( ${d} ^ ${e} )`,
+      rule: "PEMDAS begins with Parentheses. Inside these parentheses, we have an exponent to calculate.",
       result: step1Result
     },
     {
       id: "step2",
-      operation: "Parentheses/Exponent",
-      description: `Calculate ${d} raised to power ${e} inside the parentheses`,
-      expression: `( ${d} ^ ${e} )`,
-      rule: `Now we handle the expression inside parentheses with the exponent. ${d} raised to power ${e} equals ${step2Result}`,
+      operation: "Multiplication",
+      description: `Multiply ${b} by ${c}`,
+      expression: `${b} * ${c}`,
+      rule: "Following PEMDAS, after Parentheses and Exponents, we handle Multiplication and Division from left to right.",
       result: step2Result
     },
     {
       id: "step3",
       operation: "Subtraction",
-      description: `Subtract ${step1Result} from ${a}`,
-      expression: `${a} - ${step1Result}`,
-      rule: `After handling multiplication/division and exponents, we proceed with addition/subtraction from left to right. ${a} - ${step1Result} = ${step3Result}`,
+      description: `Subtract ${step2Result} from ${a}`,
+      expression: `${a} - ${step2Result}`,
+      rule: "Next in PEMDAS is Addition and Subtraction from left to right. Since subtraction appears first, we calculate it first.",
       result: step3Result
     },
     {
       id: "step4",
       operation: "Addition",
-      description: `Add ${step3Result} and ${step2Result}`,
-      expression: `${step3Result} + ${step2Result}`,
-      rule: `Finally, we continue with addition/subtraction from left to right. ${step3Result} + ${step2Result} = ${finalResult}`,
+      description: `Add ${step3Result} and ${step1Result}`,
+      expression: `${step3Result} + ${step1Result}`,
+      rule: "Finally, we continue with addition/subtraction from left to right, completing the PEMDAS sequence.",
       result: finalResult
     }
   ];
@@ -299,7 +299,7 @@ const generateBalancedEquation = () => {
       operation: "Parentheses",
       description: `Calculate ${a} + ${b} inside the parentheses`,
       expression: `( ${a} + ${b} )`,
-      rule: `PEMDAS starts with Parentheses. Calculate ${a} + ${b} = ${step1Result}`,
+      rule: "PEMDAS starts with Parentheses. Always solve expressions inside parentheses first.",
       result: step1Result
     },
     {
@@ -307,7 +307,7 @@ const generateBalancedEquation = () => {
       operation: "Exponent",
       description: `Calculate ${d} raised to power ${e}`,
       expression: `${d} ^ ${e}`,
-      rule: `After parentheses, we calculate exponents. ${d} raised to power ${e} equals ${step2Result}`,
+      rule: "After parentheses, we calculate Exponents. This is the second priority in the PEMDAS sequence.",
       result: step2Result
     },
     {
@@ -315,7 +315,7 @@ const generateBalancedEquation = () => {
       operation: "Multiplication",
       description: `Multiply ${step1Result} by ${c}`,
       expression: `${step1Result} * ${c}`,
-      rule: `Next in PEMDAS is multiplication and division, from left to right. First, we multiply: ${step1Result} * ${c} = ${step3Result}`,
+      rule: "Next in PEMDAS is Multiplication and Division, from left to right. Since multiplication appears first, we calculate it next.",
       result: step3Result
     },
     {
@@ -323,7 +323,7 @@ const generateBalancedEquation = () => {
       operation: "Division",
       description: `Divide ${step3Result} by ${step2Result}`,
       expression: `${step3Result} ÷ ${step2Result}`,
-      rule: `Next we continue with division: ${step3Result} ÷ ${step2Result} = ${finalResult}`,
+      rule: "Continuing with multiplication/division from left to right. After handling multiplication, we now perform division.",
       result: finalResult
     }
   ];

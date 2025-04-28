@@ -46,11 +46,21 @@ const PemdasTutorial = () => {
   const [incorrectAttempts, setIncorrectAttempts] = useState<string[]>([]);
   const [showIntroduction, setShowIntroduction] = useState<boolean>(true);
   const [showTip, setShowTip] = useState<boolean>(false);
+  const [availableSteps, setAvailableSteps] = useState<Step[]>([]);
 
   // Generate a new equation when the component mounts
   useEffect(() => {
     generateNewProblem();
   }, []);
+
+  // Update available steps when steps or completedSteps change
+  useEffect(() => {
+    if (steps.length > 0) {
+      // Filter out completed steps
+      const filtered = steps.filter(step => !completedSteps.includes(step.id));
+      setAvailableSteps(filtered);
+    }
+  }, [steps, completedSteps]);
 
   const generateNewProblem = () => {
     const { equation, steps } = generateRandomPemdasEquation();
@@ -62,6 +72,7 @@ const PemdasTutorial = () => {
     setIncorrectAttempts([]);
     setIsDialogOpen(false);
     setShowTip(false);
+    setAvailableSteps(steps);
   };
 
   const handleOptionSelect = (optionId: string) => {
@@ -145,6 +156,13 @@ const PemdasTutorial = () => {
               <li><strong>M</strong>ultiplication & <strong>D</strong>ivision - From left to right</li>
               <li><strong>A</strong>ddition & <strong>S</strong>ubtraction - From left to right</li>
             </ul>
+            <p className="mt-4 font-medium text-magic-dark-purple/90">Important Rules:</p>
+            <ol className="list-decimal pl-5 space-y-2 text-magic-dark-purple/80">
+              <li>Always solve expressions within parentheses first, working from innermost to outermost.</li>
+              <li>Next, calculate all exponents.</li>
+              <li>Then, perform all multiplication and division, moving from left to right.</li>
+              <li>Finally, perform all addition and subtraction, moving from left to right.</li>
+            </ol>
             <p className="mt-4">In this tutorial, we'll give you an equation and guide you through solving it step-by-step according to PEMDAS rules.</p>
             <Button 
               onClick={() => setShowIntroduction(false)}
@@ -198,24 +216,21 @@ const PemdasTutorial = () => {
           </Alert>
 
           <RadioGroup className="space-y-3">
-            {steps.map((step, index) => {
-              const isCompleted = completedSteps.includes(step.id);
+            {availableSteps.map((step) => {
               const isIncorrect = incorrectAttempts.includes(step.id);
-              const isDisabled = isCompleted || isIncorrect;
               
               return (
                 <div key={step.id} className={`
                   flex items-center space-x-2 rounded-lg border p-4
-                  ${isCompleted ? 'bg-green-100 border-green-500' : ''}
-                  ${isIncorrect ? 'bg-red-50 border-red-300' : ''}
-                  ${isDisabled ? 'opacity-60' : 'hover:bg-magic-light-purple/30 cursor-pointer'}
+                  ${isIncorrect ? 'bg-red-50 border-red-300' : 'hover:bg-magic-light-purple/30 cursor-pointer'}
+                  ${isIncorrect ? 'opacity-60' : ''}
                 `}>
                   <RadioGroupItem
                     id={step.id}
                     value={step.id}
-                    disabled={isDisabled}
+                    disabled={isIncorrect}
                     checked={selectedOption === step.id}
-                    onClick={() => !isDisabled && handleOptionSelect(step.id)}
+                    onClick={() => !isIncorrect && handleOptionSelect(step.id)}
                   />
                   <label 
                     htmlFor={step.id} 
