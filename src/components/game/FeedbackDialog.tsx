@@ -41,7 +41,7 @@ const FeedbackDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md bg-white/95 border-2 border-magic-purple">
+      <DialogContent className="max-w-md bg-white/95 border-2 border-magic-purple fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%]">
         <DialogHeader>
           <DialogTitle className="text-xl text-center font-bold">
             {isCorrect ? "Magical Success!" : "Not Quite Right"}

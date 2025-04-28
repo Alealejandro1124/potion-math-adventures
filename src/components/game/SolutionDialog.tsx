@@ -37,9 +37,17 @@ const SolutionDialog = ({
   
   const maxDialogHeight = isMobile ? "70vh" : "80vh";
 
+  // Prevent dialog close via escape key or clicking outside
+  const handleOpenChange = (open: boolean) => {
+    // Only allow closing through the "I Understand" or "Got it!" buttons
+    if (open === false) {
+      return;
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl bg-white/95 border-2 border-magic-purple max-h-screen">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-3xl bg-white/95 border-2 border-magic-purple max-h-screen" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-2xl text-magic-dark-purple font-bold">
             {isCorrect ? "Solution Overview" : "Let's Learn How to Solve This"}
@@ -48,6 +56,13 @@ const SolutionDialog = ({
             Review the steps to solve this problem correctly.
           </DialogDescription>
         </DialogHeader>
+        
+        {/* Hide the default X close button */}
+        <style jsx global>{`
+          .DialogContent button[data-state] {
+            display: none;
+          }
+        `}</style>
         
         <ScrollArea className="pr-4" style={{ maxHeight: maxDialogHeight }}>
           <div className="p-4 bg-white/80 rounded-lg shadow-inner">

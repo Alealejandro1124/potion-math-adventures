@@ -63,6 +63,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
 
   const handleShowSolution = () => {
     setShowSolution(true);
+    setShowFeedback(false); // Hide the feedback dialog when showing solution
     setCurrentStepIndex(0);
   };
 
@@ -80,6 +81,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
 
   const handleCloseSolution = () => {
     setShowSolution(false);
+    setShowFeedback(true); // Show feedback dialog again after closing solution
     setCurrentStepIndex(0);
     setSolutionViewed(true);
   };
