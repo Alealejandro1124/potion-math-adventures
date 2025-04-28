@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Sparkles, Star } from "lucide-react";
+import { Sparkles, Star, BookOpen } from "lucide-react";
 
 interface FeedbackDisplayProps {
   isCorrect: boolean;
@@ -22,16 +22,28 @@ const FeedbackDisplay = ({
       {isCorrect ? (
         <div className="flex items-center justify-center">
           <Sparkles className="mr-2" />
-          <span>Correct! A magical ingredient is added!</span>
+          <span className="text-lg font-medium">Correct! A magical ingredient is added to your potion!</span>
           <Star className="ml-2" />
         </div>
       ) : (
-        <div>Oops! A silly ingredient falls in!</div>
+        <div className="flex items-center justify-center">
+          <span className="text-lg font-medium">Oops! A silly ingredient falls into your cauldron!</span>
+        </div>
       )}
       
+      <p className="mt-2 text-sm opacity-80">
+        {isCorrect 
+          ? "Great job solving this multi-step problem!" 
+          : "Don't worry! Math wizards learn from their mistakes."}
+      </p>
+      
       <div className="flex justify-center gap-4 mt-4">
-        <Button onClick={onShowSolution} className="bg-magic-blue hover:bg-magic-blue/80">
-          {isCorrect ? "See Solution" : "Learn Correct Solution"}
+        <Button 
+          onClick={onShowSolution} 
+          className="bg-magic-blue hover:bg-magic-blue/80 flex items-center gap-2"
+        >
+          <BookOpen className="w-4 h-4" />
+          {isCorrect ? "See Solution Steps" : "Learn the Correct Solution"}
         </Button>
         
         <Button onClick={onNext} className="magical-button">
