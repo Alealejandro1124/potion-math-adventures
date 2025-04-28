@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import { generateProblem, type MathProblem } from "@/utils/mathProblemGenerator";
 import MathProblemDisplay from "./MathProblem";
-import FeedbackDisplay from "./FeedbackDisplay";
 import Cauldron from "./Cauldron";
 import SolutionDialog from "./SolutionDialog";
+import FeedbackDialog from "./FeedbackDialog";
 
 interface GameScreenProps {
   onComplete: (mistakes: number) => void;
@@ -80,6 +80,10 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
     setCurrentStepIndex(0);
   };
   
+  const handleFeedbackOpenChange = (open: boolean) => {
+    setShowFeedback(open);
+  };
+  
   if (problems.length === 0) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -99,16 +103,14 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
       
       <Cauldron ingredients={ingredients} />
       
-      {showFeedback && (
-        <div className="w-full md:w-1/2">
-          <FeedbackDisplay 
-            isCorrect={isCorrect!}
-            onShowSolution={handleShowSolution}
-            onNext={handleNext}
-            isLastProblem={currentProblemIndex === problems.length - 1}
-          />
-        </div>
-      )}
+      <FeedbackDialog
+        open={showFeedback}
+        onOpenChange={handleFeedbackOpenChange}
+        isCorrect={isCorrect!}
+        onShowSolution={handleShowSolution}
+        onNext={handleNext}
+        isLastProblem={currentProblemIndex === problems.length - 1}
+      />
 
       <SolutionDialog
         open={showSolution}
