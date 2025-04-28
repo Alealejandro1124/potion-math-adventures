@@ -48,10 +48,9 @@ const SolutionDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent 
-        className="max-w-3xl bg-white/95 border-2 border-magic-purple max-h-screen" 
+        className="max-w-3xl bg-white/95 border-2 border-magic-purple fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]" 
         onPointerDownOutside={(e) => e.preventDefault()} 
         onEscapeKeyDown={(e) => e.preventDefault()}
-        style={{position: "relative"}}
       >
         {/* Custom CSS to hide the default close button */}
         <style dangerouslySetInnerHTML={{ __html: `
