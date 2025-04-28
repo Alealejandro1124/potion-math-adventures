@@ -103,7 +103,7 @@ const generateAllOperationsEquation = () => {
       operation: "Exponent",
       description: `Calculate ${a} raised to power ${b}`,
       expression: `${a} ^ ${b}`,
-      rule: "After parentheses, we calculate exponents. ${a} raised to power ${b} equals ${step1Result}."
+      rule: `After parentheses, we calculate exponents. ${a} raised to power ${b} equals ${step1Result}.`
     },
     {
       id: "step2",
@@ -144,7 +144,7 @@ const generateMultDivEquation = () => {
       operation: "Division",
       description: `Divide ${a} by ${b}`,
       expression: `${a} / ${b}`,
-      rule: "For multiplication and division, we work from left to right. Since division appears first, we calculate ${a} ÷ ${b} first."
+      rule: `For multiplication and division, we work from left to right. Since division appears first, we calculate ${a} ÷ ${b} first.`
     },
     {
       id: "step2",
@@ -178,7 +178,7 @@ const generateAddSubEquation = () => {
       operation: "Subtraction",
       description: `Subtract ${b} from ${a}`,
       expression: `${a} - ${b}`,
-      rule: "For addition and subtraction, we work from left to right. Since subtraction appears first, we calculate ${a} - ${b} first."
+      rule: `For addition and subtraction, we work from left to right. Since subtraction appears first, we calculate ${a} - ${b} first.`
     },
     {
       id: "step2",
