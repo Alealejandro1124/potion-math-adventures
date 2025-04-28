@@ -17,8 +17,8 @@ interface MathProblem {
 // Generate a random PEMDAS problem with at least 4 steps
 // and ensures whole number answers
 const generateProblem = (): MathProblem => {
-  // Problem types (expanded to 15 different formats):
-  const problemType = Math.floor(Math.random() * 15);
+  // Problem types (expanded to 18 different formats):
+  const problemType = Math.floor(Math.random() * 18);
   
   let question = '';
   let correctAnswer = 0;
@@ -262,6 +262,76 @@ const generateProblem = (): MathProblem => {
         -mn1 * mn2 + Math.pow(mn3, 2), // misplaced negative
         mn1 * (-(mn2 + Math.pow(mn3, 2))), // negative applied to entire expression
         mn1 * (-mn2 + Math.pow(mn3, 2)), // incorrect grouping with negative
+      ];
+      break;
+      
+    case 15: // Division with parentheses
+      const div1 = Math.floor(Math.random() * 5) + 3; // 3-7
+      const div2 = Math.floor(Math.random() * 4) + 2; // 2-5
+      // Make divisor small for whole number results
+      const div3 = Math.floor(Math.random() * 3) + 2; // 2-4
+      // Additional number to make problem more complex
+      const div4 = Math.floor(Math.random() * 5) + 1; // 1-5
+      
+      // Ensure whole number answers by making dividend a multiple of divisor
+      const product = div1 * div2;
+      
+      question = `(${div1} × ${div2}) ÷ ${div3} + ${div4}`;
+      correctAnswer = (product / div3) + div4;
+      
+      // Common mistakes: incorrect order with division
+      commonMistakeAnswers = [
+        div1 * div2 / (div3 + div4), // applied division to the addition
+        div1 * (div2 / div3) + div4, // incorrect parenthesis placement
+        div1 * div2 / div3 / div4, // treating addition as division
+      ];
+      break;
+      
+    case 16: // Division with multiple operations
+      const md1 = Math.floor(Math.random() * 4) + 3; // 3-6
+      const md2 = Math.floor(Math.random() * 3) + 2; // 2-4
+      const md3 = Math.floor(Math.random() * 3) + 2; // 2-4
+      
+      // Make md4 be a factor of md2*md3 to ensure whole number result
+      const mProduct = md2 * md3;
+      const md4 = [1, 2, mProduct][Math.floor(Math.random() * 3)]; // Divisor is either 1, 2, or the product itself
+      
+      question = `${md1} + (${md2} × ${md3}) ÷ ${md4}`;
+      correctAnswer = md1 + ((md2 * md3) / md4);
+      
+      // Common mistakes: division order errors
+      commonMistakeAnswers = [
+        (md1 + md2 * md3) / md4, // applied division to the entire expression
+        md1 + md2 * (md3 / md4), // incorrect parenthesis placement
+        md1 + md2 * md3 * (1/md4), // division as multiplication by reciprocal with wrong precedence
+      ];
+      break;
+      
+    case 17: // Nested divisions with operations
+      const nd1 = Math.floor(Math.random() * 5) + 6; // 6-10
+      
+      // Generate divisor values that will produce whole number results
+      // Choose between 1, 2, 3 for both divisors
+      const nd2 = Math.floor(Math.random() * 3) + 1; // 1-3
+      const nd3 = Math.floor(Math.random() * 3) + 1; // 1-3
+      
+      // Calculate sum for denominator
+      const denominator = nd2 + nd3;
+      
+      // Adjust nd1 to be divisible by denominator for whole number result
+      const adjustedNd1 = nd1 * denominator;
+      
+      // Make nd4 a small multiplier
+      const nd4 = Math.floor(Math.random() * 3) + 2; // 2-4
+      
+      question = `${adjustedNd1} ÷ (${nd2} + ${nd3}) × ${nd4}`;
+      correctAnswer = (adjustedNd1 / denominator) * nd4;
+      
+      // Common mistakes: incorrect division order
+      commonMistakeAnswers = [
+        adjustedNd1 / nd2 + nd3 * nd4, // ignored parentheses completely
+        adjustedNd1 / ((nd2 + nd3) * nd4), // division applied before multiplication
+        (adjustedNd1 / nd2 + nd3) * nd4, // incorrect grouping for division
       ];
       break;
       
