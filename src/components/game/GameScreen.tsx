@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,19 +16,23 @@ interface MathProblem {
 
 // Generate a random PEMDAS problem with at least 4 steps
 const generateProblem = (): MathProblem => {
-  // Problem types:
-  // 0: Parentheses with multiple operations
-  // 1: Exponents with addition/subtraction/multiplication
+  // Problem types (expanded to 8 different formats):
+  // 0: Nested parentheses with operations
+  // 1: Exponents with parentheses
   // 2: Complex multiplication/division and addition/subtraction combinations
-  // 3: Multi-step mixed operations
-  const problemType = Math.floor(Math.random() * 4);
+  // 3: Multi-step mixed operations with exponents
+  // 4: Parentheses with exponents
+  // 5: Division with addition/multiplication
+  // 6: Operations with negative numbers
+  // 7: Complex multi-operation problems
+  const problemType = Math.floor(Math.random() * 8);
   
   let question = '';
   let correctAnswer = 0;
   let commonMistakeAnswers: number[] = [];
   
   switch(problemType) {
-    case 0: // Parentheses with multiple operations
+    case 0: // Nested parentheses with operations
       const p1 = Math.floor(Math.random() * 10) + 2;
       const p2 = Math.floor(Math.random() * 10) + 2;
       const p3 = Math.floor(Math.random() * 10) + 2;
@@ -46,20 +49,20 @@ const generateProblem = (): MathProblem => {
       ];
       break;
       
-    case 1: // Exponents with other operations
-      const base = Math.floor(Math.random() * 5) + 2; // 2-6
-      const exp = Math.floor(Math.random() * 2) + 2; // 2-3
+    case 1: // Exponents with parentheses
+      const base1 = Math.floor(Math.random() * 5) + 2; // 2-6
+      const exp1 = Math.floor(Math.random() * 2) + 2; // 2-3
       const n1 = Math.floor(Math.random() * 8) + 2;
       const n2 = Math.floor(Math.random() * 8) + 2;
       
-      question = `${base}² × ${n1} + ${n2}`;
-      correctAnswer = Math.pow(base, 2) * n1 + n2;
+      question = `${base1}^${exp1} + (${n1} × ${n2})`;
+      correctAnswer = Math.pow(base1, exp1) + (n1 * n2);
       
-      // Common mistakes: doing operations in incorrect order
+      // Common mistakes: exponent rules
       commonMistakeAnswers = [
-        Math.pow(base * n1, 2) + n2, // squared after multiplication
-        Math.pow(base, 2) + (n1 * n2), // addition before multiplication
-        Math.pow(base, 2 + n1) + n2, // exponentiation with wrong grouping
+        Math.pow(base1, exp1 + (n1 * n2)), // added exponent to the product instead
+        Math.pow(base1, exp1) * (n1 + n2), // multiplication distributed incorrectly
+        Math.pow(base1, exp1 + n1 * n2),   // incorrect order of operations with exponent
       ];
       break;
       
@@ -80,22 +83,86 @@ const generateProblem = (): MathProblem => {
       ];
       break;
       
-    case 3: // Multi-step mixed operations
-      const a = Math.floor(Math.random() * 8) + 2;
-      const b = Math.floor(Math.random() * 8) + 2;
-      const c = Math.floor(Math.random() * 4) + 2;
-      const d = Math.floor(Math.random() * 4) + 2;
+    case 3: // Multi-step mixed operations with exponents
+      const a = Math.floor(Math.random() * 4) + 2;
+      const b = Math.floor(Math.random() * 4) + 2;
+      const c = Math.floor(Math.random() * 3) + 2;
       
-      question = `${a} × ${b} + ${c} × ${d}`;
-      correctAnswer = (a * b) + (c * d);
+      question = `${a}^2 × ${b} + ${c} × ${a}`;
+      correctAnswer = Math.pow(a, 2) * b + c * a;
       
-      // Common mistakes: incorrect order of operations
+      // Common mistakes: exponent and multiplication order
       commonMistakeAnswers = [
-        a * (b + c) * d, // not respecting multiplication order
-        (a * b + c) * d, // incorrect grouping
-        a * b + c + d,   // adding all numbers together after first multiplication
+        Math.pow(a * b, 2) + c * a, // squared the product instead of just a
+        Math.pow(a, 2) + b * c * a, // incorrect grouping
+        Math.pow(a, 2 * b) + c * a, // put the multiplier inside the exponent
       ];
       break;
+      
+    case 4: // Parentheses with exponents
+      const pe1 = Math.floor(Math.random() * 5) + 2;
+      const pe2 = Math.floor(Math.random() * 5) + 2;
+      
+      question = `(${pe1} + ${pe2})^2 - ${pe1}`;
+      correctAnswer = Math.pow((pe1 + pe2), 2) - pe1;
+      
+      // Common mistakes: distributing exponents incorrectly
+      commonMistakeAnswers = [
+        Math.pow(pe1, 2) + Math.pow(pe2, 2) - pe1, // didn't square the sum correctly
+        (pe1 + pe2) * (pe1 + pe2) - pe1, // expanded incorrectly
+        Math.pow(pe1 + pe2, 2) * pe1, // multiplied instead of subtracted
+      ];
+      break;
+      
+    case 5: // Division with addition/multiplication
+      const d1 = Math.floor(Math.random() * 6) + 5; // Larger number to avoid division by zero
+      const d2 = Math.floor(Math.random() * 4) + 2;
+      const d3 = Math.floor(Math.random() * 3) + 2;
+      
+      question = `${d1} ÷ ${d2} + ${d3} × ${d2}`;
+      correctAnswer = (d1 / d2) + (d3 * d2);
+      
+      // Common mistakes: division and multiplication order
+      commonMistakeAnswers = [
+        d1 / (d2 + d3 * d2), // division applied last
+        (d1 / d2 + d3) * d2, // incorrect grouping
+        d1 / (d2 + d3) * d2, // incorrect parentheses
+      ];
+      break;
+      
+    case 6: // Operations with negative numbers
+      const neg1 = Math.floor(Math.random() * 8) + 3;
+      const neg2 = Math.floor(Math.random() * 8) + 3;
+      
+      question = `-${neg1} + ${neg2} × 2`;
+      correctAnswer = -neg1 + (neg2 * 2);
+      
+      // Common mistakes: handling negative numbers
+      commonMistakeAnswers = [
+        (-neg1 + neg2) * 2, // incorrect grouping with negative
+        -(neg1 + neg2 * 2), // negative applied to entire expression
+        -neg1 * neg2 * 2, // treating addition as multiplication
+      ];
+      break;
+      
+    case 7: // Complex multi-operation problems
+      const co1 = Math.floor(Math.random() * 5) + 2;
+      const co2 = Math.floor(Math.random() * 4) + 2;
+      const co3 = Math.floor(Math.random() * 3) + 2;
+      
+      question = `${co1} × (${co2} + ${co3}) - ${co2}^2`;
+      correctAnswer = co1 * (co2 + co3) - Math.pow(co2, 2);
+      
+      // Common mistakes: complex operations
+      commonMistakeAnswers = [
+        co1 * co2 + co3 - Math.pow(co2, 2), // ignored parentheses
+        co1 * (co2 + co3 - Math.pow(co2, 2)), // incorrect grouping with the exponent
+        co1 * (co2 + co3) - co2 * co2, // calculated exponent incorrectly
+      ];
+      break;
+      
+    default:
+      return generateProblem(); // Recursively try again if we somehow get an invalid type
   }
   
   // Ensure we have exactly 3 incorrect answers

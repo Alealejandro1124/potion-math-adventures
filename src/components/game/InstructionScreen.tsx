@@ -17,7 +17,7 @@ const InstructionScreen = ({ onContinue }: InstructionScreenProps) => {
             <div className="bg-magic-purple text-white w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">
               1
             </div>
-            <p>Solve three PEMDAS math problems (Parenthesis, Exponents, Multiply/Divide, Add/Subtract).</p>
+            <p>Solve ten PEMDAS math problems (Parenthesis, Exponents, Multiply/Divide, Add/Subtract).</p>
           </div>
           
           <div className="flex items-start space-x-3">
