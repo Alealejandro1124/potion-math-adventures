@@ -119,12 +119,21 @@ const SolutionDialog = ({
                   Previous Step
                 </Button>
                 
-                <Button 
-                  onClick={onNextStep}
-                  className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
-                >
-                  {currentStepIndex === problem.steps.length - 1 ? "See Summary" : "Next Step"}
-                </Button>
+                {showSummary ? (
+                  <Button 
+                    onClick={onClose}
+                    className="bg-magic-green hover:bg-magic-green/80"
+                  >
+                    I Understand
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={onNextStep}
+                    className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
+                  >
+                    {currentStepIndex === problem.steps.length - 1 ? "See Summary" : "Next Step"}
+                  </Button>
+                )}
               </div>
             </div>
           )}
