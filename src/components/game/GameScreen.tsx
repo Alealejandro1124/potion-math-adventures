@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -270,12 +269,17 @@ const generateProblem = (): MathProblem => {
       return generateProblem(); // Recursively try again if we somehow get an invalid type
   }
   
-  // Filter out non-whole number answers
+  // Filter out non-whole number answers and ensure they are unique
   if (correctAnswer % 1 !== 0) {
     return generateProblem(); // Try again if the correct answer isn't a whole number
   }
   
-  // Ensure we have exactly 3 incorrect answers
+  // Filter out non-whole number mistakes and ensure they are unique
+  commonMistakeAnswers = commonMistakeAnswers
+    .filter(answer => answer % 1 === 0 && answer !== correctAnswer)
+    .filter((value, index, self) => self.indexOf(value) === index);
+  
+  // Ensure we have enough unique mistake answers
   while (commonMistakeAnswers.length < 3) {
     // Add some random offsets if we don't have enough logical mistakes
     const offset = Math.floor(Math.random() * 10) + 1;
@@ -296,6 +300,12 @@ const generateProblem = (): MathProblem => {
   
   // Shuffle options
   options = options.sort(() => Math.random() - 0.5);
+  
+  // Check for duplicates in options (this should never happen due to our filtering)
+  const uniqueOptions = [...new Set(options)];
+  if (uniqueOptions.length < 4) {
+    return generateProblem(); // Try again if we have duplicates
+  }
   
   return { question, options, correctAnswer, commonMistakeAnswers };
 };
