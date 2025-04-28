@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,17 +16,10 @@ interface MathProblem {
 }
 
 // Generate a random PEMDAS problem with at least 4 steps
+// and ensures whole number answers
 const generateProblem = (): MathProblem => {
-  // Problem types (expanded to 8 different formats):
-  // 0: Nested parentheses with operations
-  // 1: Exponents with parentheses
-  // 2: Complex multiplication/division and addition/subtraction combinations
-  // 3: Multi-step mixed operations with exponents
-  // 4: Parentheses with exponents
-  // 5: Division with addition/multiplication
-  // 6: Operations with negative numbers
-  // 7: Complex multi-operation problems
-  const problemType = Math.floor(Math.random() * 8);
+  // Problem types (expanded to 15 different formats):
+  const problemType = Math.floor(Math.random() * 15);
   
   let question = '';
   let correctAnswer = 0;
@@ -36,7 +30,7 @@ const generateProblem = (): MathProblem => {
       const p1 = Math.floor(Math.random() * 10) + 2;
       const p2 = Math.floor(Math.random() * 10) + 2;
       const p3 = Math.floor(Math.random() * 10) + 2;
-      const p4 = Math.floor(Math.random() * 10) + 2;
+      const p4 = Math.floor(Math.random() * p3) + 1; // Ensure p4 < p3 for whole number result
       
       question = `(${p1} + ${p2}) × (${p3} - ${p4})`;
       correctAnswer = (p1 + p2) * (p3 - p4);
@@ -50,10 +44,10 @@ const generateProblem = (): MathProblem => {
       break;
       
     case 1: // Exponents with parentheses
-      const base1 = Math.floor(Math.random() * 5) + 2; // 2-6
-      const exp1 = Math.floor(Math.random() * 2) + 2; // 2-3
-      const n1 = Math.floor(Math.random() * 8) + 2;
-      const n2 = Math.floor(Math.random() * 8) + 2;
+      const base1 = Math.floor(Math.random() * 4) + 2; // 2-5
+      const exp1 = 2; // Using 2 for squares to keep answers reasonable
+      const n1 = Math.floor(Math.random() * 6) + 2;
+      const n2 = Math.floor(Math.random() * 6) + 2;
       
       question = `${base1}^${exp1} + (${n1} × ${n2})`;
       correctAnswer = Math.pow(base1, exp1) + (n1 * n2);
@@ -84,7 +78,7 @@ const generateProblem = (): MathProblem => {
       break;
       
     case 3: // Multi-step mixed operations with exponents
-      const a = Math.floor(Math.random() * 4) + 2;
+      const a = Math.floor(Math.random() * 3) + 2; // 2-4 to keep answers small
       const b = Math.floor(Math.random() * 4) + 2;
       const c = Math.floor(Math.random() * 3) + 2;
       
@@ -100,8 +94,8 @@ const generateProblem = (): MathProblem => {
       break;
       
     case 4: // Parentheses with exponents
-      const pe1 = Math.floor(Math.random() * 5) + 2;
-      const pe2 = Math.floor(Math.random() * 5) + 2;
+      const pe1 = Math.floor(Math.random() * 4) + 2; // 2-5
+      const pe2 = Math.floor(Math.random() * 4) + 2; // 2-5
       
       question = `(${pe1} + ${pe2})^2 - ${pe1}`;
       correctAnswer = Math.pow((pe1 + pe2), 2) - pe1;
@@ -115,18 +109,21 @@ const generateProblem = (): MathProblem => {
       break;
       
     case 5: // Division with addition/multiplication
-      const d1 = Math.floor(Math.random() * 6) + 5; // Larger number to avoid division by zero
-      const d2 = Math.floor(Math.random() * 4) + 2;
-      const d3 = Math.floor(Math.random() * 3) + 2;
+      const d1 = Math.floor(Math.random() * 6) + 5; // Larger number
+      const d2 = Math.floor(Math.random() * 3) + 2; // 2-4
+      const d3 = Math.floor(Math.random() * 3) + 2; // 2-4
       
-      question = `${d1} ÷ ${d2} + ${d3} × ${d2}`;
-      correctAnswer = (d1 / d2) + (d3 * d2);
+      // Ensure d1 is divisible by d2 for whole number result
+      const adjustedD1 = d1 * d2;
+      
+      question = `${adjustedD1} ÷ ${d2} + ${d3} × ${d2}`;
+      correctAnswer = (adjustedD1 / d2) + (d3 * d2);
       
       // Common mistakes: division and multiplication order
       commonMistakeAnswers = [
-        d1 / (d2 + d3 * d2), // division applied last
-        (d1 / d2 + d3) * d2, // incorrect grouping
-        d1 / (d2 + d3) * d2, // incorrect parentheses
+        adjustedD1 / (d2 + d3 * d2), // division applied last
+        (adjustedD1 / d2 + d3) * d2, // incorrect grouping
+        adjustedD1 / (d2 + d3) * d2, // incorrect parentheses
       ];
       break;
       
@@ -161,8 +158,121 @@ const generateProblem = (): MathProblem => {
       ];
       break;
       
+    case 8: // Multiple parentheses with operations
+      const mp1 = Math.floor(Math.random() * 5) + 2;
+      const mp2 = Math.floor(Math.random() * 5) + 2;
+      const mp3 = Math.floor(Math.random() * 5) + 2;
+      
+      question = `${mp1} × (${mp2} + ${mp3}) - (${mp1} - ${mp3})`;
+      correctAnswer = mp1 * (mp2 + mp3) - (mp1 - mp3);
+      
+      commonMistakeAnswers = [
+        mp1 * mp2 + mp3 - (mp1 - mp3), // ignored first parenthesis
+        mp1 * (mp2 + mp3) - mp1 + mp3, // ignored second parenthesis
+        mp1 * (mp2 + mp3 - mp1 + mp3), // combined all terms in parentheses
+      ];
+      break;
+      
+    case 9: // Exponents with multiple operations
+      const em1 = Math.floor(Math.random() * 3) + 2; // 2-4
+      const em2 = Math.floor(Math.random() * 4) + 2;
+      const em3 = Math.floor(Math.random() * 3) + 2;
+      
+      question = `${em1}^2 - ${em2} + ${em3} × ${em1}`;
+      correctAnswer = Math.pow(em1, 2) - em2 + em3 * em1;
+      
+      commonMistakeAnswers = [
+        Math.pow(em1, 2) - (em2 + em3 * em1), // incorrect grouping
+        Math.pow(em1, 2 - em2) + em3 * em1, // incorrect exponent application
+        Math.pow(em1, 2) - em2 + em3 + em1, // multiplication changed to addition
+      ];
+      break;
+      
+    case 10: // Nested operations with different operators
+      const no1 = Math.floor(Math.random() * 5) + 3;
+      const no2 = Math.floor(Math.random() * 3) + 2;
+      const no3 = Math.floor(Math.random() * 4) + 2;
+      const no4 = Math.floor(Math.random() * 3) + 1;
+      
+      question = `${no1} - (${no2} × ${no3} - ${no4})`;
+      correctAnswer = no1 - (no2 * no3 - no4);
+      
+      commonMistakeAnswers = [
+        no1 - no2 * no3 - no4, // ignored parenthesis completely
+        no1 - no2 * (no3 - no4), // incorrect parenthesis placement
+        (no1 - no2) * no3 - no4, // completely wrong parenthesis application
+      ];
+      break;
+      
+    case 11: // Multiple exponents
+      const me1 = Math.floor(Math.random() * 3) + 2; // 2-4
+      const me2 = Math.floor(Math.random() * 2) + 2; // 2-3
+      
+      question = `${me1}^2 + ${me2}^2 + ${me1} × ${me2}`;
+      correctAnswer = Math.pow(me1, 2) + Math.pow(me2, 2) + me1 * me2;
+      
+      commonMistakeAnswers = [
+        Math.pow(me1 + me2, 2) + me1 * me2, // combined exponents incorrectly
+        Math.pow(me1, 2) + Math.pow(me2, 2 + me1 * me2), // incorrect grouping
+        Math.pow(me1, 2 + Math.pow(me2, 2)) + me1 * me2, // nested exponents incorrectly
+      ];
+      break;
+      
+    case 12: // Division with multiple operations
+      const dm1 = Math.floor(Math.random() * 7) + 4;
+      const dm2 = Math.floor(Math.random() * 3) + 2;
+      const dm3 = Math.floor(Math.random() * 4) + 2;
+      
+      // Ensure divisibility for whole number result
+      const adjustedDm1 = dm1 * dm2;
+      
+      question = `${adjustedDm1} ÷ ${dm2} + (${dm3} - ${dm1 % dm3})`;
+      correctAnswer = (adjustedDm1 / dm2) + (dm3 - (dm1 % dm3));
+      
+      commonMistakeAnswers = [
+        adjustedDm1 / (dm2 + (dm3 - (dm1 % dm3))), // division applied to entire expression
+        adjustedDm1 / dm2 + dm3 - dm1 % dm3, // ignored parenthesis
+        (adjustedDm1 / dm2 + dm3) - dm1 % dm3, // incorrect grouping
+      ];
+      break;
+      
+    case 13: // Complex parentheses with multiple operations
+      const cp1 = Math.floor(Math.random() * 4) + 2;
+      const cp2 = Math.floor(Math.random() * 3) + 2;
+      const cp3 = Math.floor(Math.random() * 3) + 2;
+      
+      question = `(${cp1} + ${cp2})^2 - ${cp3} × (${cp2} - 1)`;
+      correctAnswer = Math.pow((cp1 + cp2), 2) - cp3 * (cp2 - 1);
+      
+      commonMistakeAnswers = [
+        Math.pow(cp1 + cp2, 2) - cp3 * cp2 - 1, // ignored second parenthesis
+        (Math.pow(cp1, 2) + Math.pow(cp2, 2)) - cp3 * (cp2 - 1), // incorrect squaring
+        (cp1 + cp2) * (cp1 + cp2) - cp3 * cp2 - 1, // multiple errors
+      ];
+      break;
+      
+    case 14: // Mixed operations with negative numbers
+      const mn1 = Math.floor(Math.random() * 5) + 3;
+      const mn2 = Math.floor(Math.random() * 4) + 2;
+      const mn3 = Math.floor(Math.random() * 3) + 1;
+      
+      question = `${mn1} × (-${mn2}) + ${mn3}^2`;
+      correctAnswer = mn1 * (-mn2) + Math.pow(mn3, 2);
+      
+      commonMistakeAnswers = [
+        -mn1 * mn2 + Math.pow(mn3, 2), // misplaced negative
+        mn1 * (-(mn2 + Math.pow(mn3, 2))), // negative applied to entire expression
+        mn1 * (-mn2 + Math.pow(mn3, 2)), // incorrect grouping with negative
+      ];
+      break;
+      
     default:
       return generateProblem(); // Recursively try again if we somehow get an invalid type
+  }
+  
+  // Filter out non-whole number answers
+  if (correctAnswer % 1 !== 0) {
+    return generateProblem(); // Try again if the correct answer isn't a whole number
   }
   
   // Ensure we have exactly 3 incorrect answers
@@ -171,7 +281,9 @@ const generateProblem = (): MathProblem => {
     const offset = Math.floor(Math.random() * 10) + 1;
     const mistakeAnswer = correctAnswer + (Math.random() > 0.5 ? offset : -offset);
     
-    if (!commonMistakeAnswers.includes(mistakeAnswer) && mistakeAnswer !== correctAnswer) {
+    if (!commonMistakeAnswers.includes(mistakeAnswer) && 
+        mistakeAnswer !== correctAnswer && 
+        mistakeAnswer % 1 === 0) { // Ensure whole number mistakes
       commonMistakeAnswers.push(mistakeAnswer);
     }
   }
