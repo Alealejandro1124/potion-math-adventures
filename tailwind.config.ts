@@ -20,7 +20,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				"game": ["Comic Sans MS", "Comic Sans", "cursive"]
+				"game": ["Comic Neue", "Comic Sans MS", "Comic Sans", "cursive"]
 			},
 			colors: {
 				border: 'hsl(var(--border))',
