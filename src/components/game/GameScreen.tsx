@@ -12,76 +12,113 @@ interface MathProblem {
   question: string;
   options: number[];
   correctAnswer: number;
+  commonMistakeAnswers: number[];
 }
 
-// Generate a random PEMDAS problem
+// Generate a random PEMDAS problem with at least 4 steps
 const generateProblem = (): MathProblem => {
-  const operations = ['+', '-', '*', '/'];
-  let problemType = Math.floor(Math.random() * 4); // 0: parenthesis, 1: exponents, 2: mult/div, 3: add/sub
+  // Problem types:
+  // 0: Parentheses with multiple operations
+  // 1: Exponents with addition/subtraction/multiplication
+  // 2: Complex multiplication/division and addition/subtraction combinations
+  // 3: Multi-step mixed operations
+  const problemType = Math.floor(Math.random() * 4);
   
   let question = '';
   let correctAnswer = 0;
+  let commonMistakeAnswers: number[] = [];
   
   switch(problemType) {
-    case 0: // Parenthesis
-      const num1 = Math.floor(Math.random() * 10) + 1;
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      const num3 = Math.floor(Math.random() * 10) + 1;
-      const op1 = operations[Math.floor(Math.random() * 2) + 2]; // * or /
-      const op2 = operations[Math.floor(Math.random() * 2)]; // + or -
+    case 0: // Parentheses with multiple operations
+      const p1 = Math.floor(Math.random() * 10) + 2;
+      const p2 = Math.floor(Math.random() * 10) + 2;
+      const p3 = Math.floor(Math.random() * 10) + 2;
+      const p4 = Math.floor(Math.random() * 10) + 2;
       
-      question = `(${num1} ${op1} ${num2}) ${op2} ${num3}`;
+      question = `(${p1} + ${p2}) × (${p3} - ${p4})`;
+      correctAnswer = (p1 + p2) * (p3 - p4);
       
-      if (op1 === '*') {
-        correctAnswer = op2 === '+' ? (num1 * num2) + num3 : (num1 * num2) - num3;
-      } else { // division
-        correctAnswer = op2 === '+' ? Math.floor(num1 / num2) + num3 : Math.floor(num1 / num2) - num3;
-      }
+      // Common mistakes: not using parentheses properly
+      commonMistakeAnswers = [
+        p1 + (p2 * p3) - p4, // didn't respect first parenthesis
+        p1 + p2 * p3 - p4,   // ignored both parentheses
+        (p1 + p2 * p3) - p4, // only respected first parenthesis
+      ];
       break;
       
-    case 1: // Exponents
+    case 1: // Exponents with other operations
       const base = Math.floor(Math.random() * 5) + 2; // 2-6
       const exp = Math.floor(Math.random() * 2) + 2; // 2-3
-      const num4 = Math.floor(Math.random() * 10) + 1;
-      const op = operations[Math.floor(Math.random() * 2)]; // + or -
+      const n1 = Math.floor(Math.random() * 8) + 2;
+      const n2 = Math.floor(Math.random() * 8) + 2;
       
-      question = `${base}² ${op} ${num4}`;
-      correctAnswer = op === '+' ? Math.pow(base, 2) + num4 : Math.pow(base, 2) - num4;
+      question = `${base}² × ${n1} + ${n2}`;
+      correctAnswer = Math.pow(base, 2) * n1 + n2;
+      
+      // Common mistakes: doing operations in incorrect order
+      commonMistakeAnswers = [
+        Math.pow(base * n1, 2) + n2, // squared after multiplication
+        Math.pow(base, 2) + (n1 * n2), // addition before multiplication
+        Math.pow(base, 2 + n1) + n2, // exponentiation with wrong grouping
+      ];
       break;
       
-    case 2: // Multiplication/Division
-      const num5 = Math.floor(Math.random() * 10) + 1;
-      const num6 = Math.floor(Math.random() * 10) + 1;
-      const num7 = Math.floor(Math.random() * 10) + 1;
+    case 2: // Complex multiplication/division and addition/subtraction
+      const m1 = Math.floor(Math.random() * 8) + 3;
+      const m2 = Math.floor(Math.random() * 8) + 3;
+      const m3 = Math.floor(Math.random() * 8) + 3;
+      const m4 = Math.floor(Math.random() * 8) + 3;
       
-      question = `${num5} + ${num6} * ${num7}`;
-      correctAnswer = num5 + (num6 * num7);
+      question = `${m1} + ${m2} × ${m3} - ${m4}`;
+      correctAnswer = m1 + (m2 * m3) - m4;
+      
+      // Common mistakes: incorrect order of operations
+      commonMistakeAnswers = [
+        (m1 + m2) * m3 - m4, // addition before multiplication
+        m1 + m2 * (m3 - m4), // subtraction before multiplication
+        (m1 + m2) * (m3 - m4), // parentheses where there are none
+      ];
       break;
       
-    case 3: // Addition/Subtraction
-      const num8 = Math.floor(Math.random() * 20) + 10;
-      const num9 = Math.floor(Math.random() * 10) + 1;
-      const num10 = Math.floor(Math.random() * 5) + 1;
+    case 3: // Multi-step mixed operations
+      const a = Math.floor(Math.random() * 8) + 2;
+      const b = Math.floor(Math.random() * 8) + 2;
+      const c = Math.floor(Math.random() * 4) + 2;
+      const d = Math.floor(Math.random() * 4) + 2;
       
-      question = `${num8} - ${num9} + ${num10}`;
-      correctAnswer = num8 - num9 + num10;
+      question = `${a} × ${b} + ${c} × ${d}`;
+      correctAnswer = (a * b) + (c * d);
+      
+      // Common mistakes: incorrect order of operations
+      commonMistakeAnswers = [
+        a * (b + c) * d, // not respecting multiplication order
+        (a * b + c) * d, // incorrect grouping
+        a * b + c + d,   // adding all numbers together after first multiplication
+      ];
       break;
   }
   
-  // Generate 3 incorrect answers that are close to the correct answer
-  let options = [correctAnswer];
-  while(options.length < 4) {
-    const offset = Math.floor(Math.random() * 5) + 1;
-    const newOption = Math.random() > 0.5 ? correctAnswer + offset : correctAnswer - offset;
-    if (!options.includes(newOption)) {
-      options.push(newOption);
+  // Ensure we have exactly 3 incorrect answers
+  while (commonMistakeAnswers.length < 3) {
+    // Add some random offsets if we don't have enough logical mistakes
+    const offset = Math.floor(Math.random() * 10) + 1;
+    const mistakeAnswer = correctAnswer + (Math.random() > 0.5 ? offset : -offset);
+    
+    if (!commonMistakeAnswers.includes(mistakeAnswer) && mistakeAnswer !== correctAnswer) {
+      commonMistakeAnswers.push(mistakeAnswer);
     }
   }
+  
+  // Only take first 3 mistake answers if we have more
+  commonMistakeAnswers = commonMistakeAnswers.slice(0, 3);
+  
+  // Combine correct and incorrect answers
+  let options = [correctAnswer, ...commonMistakeAnswers];
   
   // Shuffle options
   options = options.sort(() => Math.random() - 0.5);
   
-  return { question, options, correctAnswer };
+  return { question, options, correctAnswer, commonMistakeAnswers };
 };
 
 const GameScreen = ({ onComplete }: GameScreenProps) => {
@@ -95,7 +132,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
   
   // Initialize problems
   useEffect(() => {
-    const newProblems = Array(3).fill(0).map(() => generateProblem());
+    const newProblems = Array(10).fill(0).map(() => generateProblem());
     setProblems(newProblems);
   }, []);
   
@@ -218,8 +255,8 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
                   ingredient.type === 'magical' ? 'bg-magic-green' : 'bg-orange-400'
                 }`}
                 style={{
-                  left: `${25 + (i * 20)}%`, 
-                  top: `${40 + (i % 2) * 20}%`,
+                  left: `${25 + (i * 8)}%`, 
+                  top: `${40 + (i % 3) * 15}%`,
                   animation: `float 2s ease-in-out infinite`,
                   animationDelay: `${i * 0.3}s`
                 }}
@@ -230,7 +267,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
         
         <div className="mt-4 text-center">
           <p className="text-xl font-semibold text-magic-dark-purple">
-            Ingredients: {ingredients.length}/3
+            Ingredients: {ingredients.length}/{problems.length}
           </p>
           <p className="text-sm text-magic-purple">
             Magical: {ingredients.filter(i => i.type === 'magical').length}
