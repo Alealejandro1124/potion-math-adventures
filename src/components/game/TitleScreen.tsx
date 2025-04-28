@@ -1,7 +1,8 @@
 
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 interface TitleScreenProps {
   onStartGame: () => void;
@@ -55,13 +56,26 @@ const TitleScreen = ({ onStartGame }: TitleScreenProps) => {
           Mix magical ingredients with math!
         </p>
         
-        <Button 
-          onClick={onStartGame}
-          className="magical-button group"
-        >
-          <span>Start Brewing</span>
-          <Sparkles className="ml-2 inline-block group-hover:animate-puff" />
-        </Button>
+        <div className="flex flex-col md:flex-row gap-4 justify-center">
+          <Button 
+            onClick={onStartGame}
+            className="magical-button group"
+          >
+            <span>Start Brewing</span>
+            <Sparkles className="ml-2 inline-block group-hover:animate-puff" />
+          </Button>
+          
+          <Link to="/learn-pemdas">
+            <Button 
+              className="bg-magic-blue hover:bg-magic-blue/80 text-white px-8 py-3 rounded-full
+                        text-lg font-bold shadow-lg transition-all duration-300
+                        hover:shadow-xl hover:scale-105 focus:outline-none"
+            >
+              <span>Learn PEMDAS</span>
+              <BookOpen className="ml-2 inline-block" />
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
