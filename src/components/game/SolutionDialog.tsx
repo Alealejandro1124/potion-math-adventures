@@ -4,7 +4,8 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Parentheses, X, Divide, Plus, Minus } from "lucide-react";
 import { MathProblem } from "@/utils/mathProblemGenerator";
@@ -38,6 +39,9 @@ const SolutionDialog = ({
           <DialogTitle className="text-2xl text-magic-dark-purple font-bold">
             {isCorrect ? "Solution Overview" : "Let's Learn How to Solve This"}
           </DialogTitle>
+          <DialogDescription className="text-magic-dark-purple/70">
+            Review the steps to solve this problem correctly.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="p-4 bg-white/80 rounded-lg shadow-inner">
@@ -115,21 +119,12 @@ const SolutionDialog = ({
                   Previous Step
                 </Button>
                 
-                {currentStepIndex < problem.steps.length ? (
-                  <Button 
-                    onClick={onNextStep}
-                    className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
-                  >
-                    {currentStepIndex === problem.steps.length - 1 ? "See Summary" : "Next Step"}
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={onClose}
-                    className="bg-magic-green hover:bg-magic-green/80"
-                  >
-                    I Understand
-                  </Button>
-                )}
+                <Button 
+                  onClick={onNextStep}
+                  className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
+                >
+                  {currentStepIndex === problem.steps.length - 1 ? "See Summary" : "Next Step"}
+                </Button>
               </div>
             </div>
           )}

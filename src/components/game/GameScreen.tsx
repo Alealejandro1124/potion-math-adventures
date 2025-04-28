@@ -67,7 +67,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
   };
 
   const handleNextStep = () => {
-    if (currentStepIndex < problems[currentProblemIndex].steps.length - 1) {
+    if (currentStepIndex < problems[currentProblemIndex].steps.length) {
       setCurrentStepIndex(currentStepIndex + 1);
     }
   };
