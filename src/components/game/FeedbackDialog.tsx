@@ -15,6 +15,7 @@ interface FeedbackDialogProps {
   onShowSolution: () => void;
   onNext: () => void;
   isLastProblem: boolean;
+  solutionViewed: boolean;
 }
 
 const FeedbackDialog = ({
@@ -23,13 +24,16 @@ const FeedbackDialog = ({
   isCorrect,
   onShowSolution,
   onNext,
-  isLastProblem
+  isLastProblem,
+  solutionViewed
 }: FeedbackDialogProps) => {
   // Handle dialog close attempts by redirecting to onNext
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       // If dialog is being closed, treat it as clicking "Next"
-      onNext();
+      if (isCorrect || solutionViewed) {
+        onNext();
+      }
     }
     onOpenChange(open);
   };
@@ -43,7 +47,7 @@ const FeedbackDialog = ({
           </DialogTitle>
         </DialogHeader>
         
-        <div className={`p-4 rounded-lg text-center ${
+        <div className={`p-4 rounded-lg text-center mx-auto w-full ${
           isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
         }`}>
           {isCorrect ? (
@@ -73,7 +77,11 @@ const FeedbackDialog = ({
               {isCorrect ? "See Solution Steps" : "Learn the Correct Solution"}
             </Button>
             
-            <Button onClick={onNext} className="magical-button">
+            <Button 
+              onClick={onNext} 
+              disabled={!isCorrect && !solutionViewed}
+              className={`${!isCorrect && !solutionViewed ? 'opacity-50 cursor-not-allowed' : 'magical-button'}`}
+            >
               {!isLastProblem ? 'Next Problem' : 'See Your Potion'}
             </Button>
           </div>

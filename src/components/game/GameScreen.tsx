@@ -20,6 +20,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [solutionViewed, setSolutionViewed] = useState(false);
   
   useEffect(() => {
     const newProblems = Array(10).fill(0).map(() => generateProblem());
@@ -43,6 +44,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
     
     setIngredients([...ingredients, newIngredient]);
     setShowFeedback(true);
+    setSolutionViewed(false);
   };
   
   const handleNext = () => {
@@ -53,6 +55,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
       setShowFeedback(false);
       setShowSolution(false);
       setCurrentStepIndex(0);
+      setSolutionViewed(false);
     } else {
       onComplete(mistakes);
     }
@@ -78,6 +81,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
   const handleCloseSolution = () => {
     setShowSolution(false);
     setCurrentStepIndex(0);
+    setSolutionViewed(true);
   };
   
   const handleFeedbackOpenChange = (open: boolean) => {
@@ -110,6 +114,7 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
         onShowSolution={handleShowSolution}
         onNext={handleNext}
         isLastProblem={currentProblemIndex === problems.length - 1}
+        solutionViewed={solutionViewed}
       />
 
       <SolutionDialog

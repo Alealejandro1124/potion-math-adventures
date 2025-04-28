@@ -28,6 +28,9 @@ const SolutionDialog = ({
   onNextStep,
   onPreviousStep
 }: SolutionDialogProps) => {
+  const isLastStep = currentStepIndex === problem.steps.length;
+  const showSummary = isLastStep;
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl bg-white/95 border-2 border-magic-purple">
@@ -84,13 +87,21 @@ const SolutionDialog = ({
           ) : (
             <div className="space-y-4">
               <div className="p-4 bg-white rounded-lg shadow border border-magic-purple">
-                {currentStepIndex < problem.steps.length ? (
-                  <div className="text-lg font-medium">
-                    {problem.steps[currentStepIndex]}
+                {showSummary ? (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-bold text-magic-dark-purple">Solution Summary:</h3>
+                    {problem.steps.map((step, index) => (
+                      <div key={index} className="p-2 bg-magic-light-purple/20 rounded mb-2">
+                        <span className="font-medium">Step {index + 1}:</span> {step}
+                      </div>
+                    ))}
+                    <div className="p-2 bg-green-100 rounded mt-4">
+                      <span className="font-bold text-green-700">Final Answer:</span> {problem.correctAnswer}
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-lg font-medium text-green-700">
-                    Now you know how to get the correct answer: {problem.correctAnswer}
+                  <div className="text-lg font-medium">
+                    {problem.steps[currentStepIndex]}
                   </div>
                 )}
               </div>
@@ -104,12 +115,12 @@ const SolutionDialog = ({
                   Previous Step
                 </Button>
                 
-                {currentStepIndex < problem.steps.length - 1 ? (
+                {currentStepIndex < problem.steps.length ? (
                   <Button 
                     onClick={onNextStep}
                     className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
                   >
-                    Next Step
+                    {currentStepIndex === problem.steps.length - 1 ? "See Summary" : "Next Step"}
                   </Button>
                 ) : (
                   <Button 
