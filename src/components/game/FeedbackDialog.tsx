@@ -4,7 +4,8 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Sparkles, Star, BookOpen } from "lucide-react";
 
@@ -45,6 +46,11 @@ const FeedbackDialog = ({
           <DialogTitle className="text-xl text-center font-bold">
             {isCorrect ? "Magical Success!" : "Not Quite Right"}
           </DialogTitle>
+          <DialogDescription className="text-center text-magic-dark-purple/80">
+            {isCorrect 
+              ? "You've mastered this spell!" 
+              : "Don't worry, you'll improve with practice."}
+          </DialogDescription>
         </DialogHeader>
         
         <div className={`p-4 rounded-lg text-center mx-auto w-full ${
@@ -68,7 +74,7 @@ const FeedbackDialog = ({
               : "Don't worry! Math wizards learn from their mistakes."}
           </p>
           
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
             <Button 
               onClick={onShowSolution} 
               className="bg-magic-blue hover:bg-magic-blue/80 flex items-center gap-2"
