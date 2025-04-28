@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Star, Plus, Minus } from "lucide-react";
+import { Sparkles, Star, Plus, Minus, Equal, X, Parentheses, Divide } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GameScreenProps {
   onComplete: (mistakes: number) => void;
@@ -12,6 +14,7 @@ interface MathProblem {
   options: number[];
   correctAnswer: number;
   commonMistakeAnswers: number[];
+  steps: string[];
 }
 
 // Generate a random PEMDAS problem with at least 4 steps
@@ -23,6 +26,7 @@ const generateProblem = (): MathProblem => {
   let question = '';
   let correctAnswer = 0;
   let commonMistakeAnswers: number[] = [];
+  let steps: string[] = [];
   
   switch(problemType) {
     case 0: // Nested parentheses with operations
@@ -33,6 +37,13 @@ const generateProblem = (): MathProblem => {
       
       question = `(${p1} + ${p2}) × (${p3} - ${p4})`;
       correctAnswer = (p1 + p2) * (p3 - p4);
+      
+      // Solution steps
+      steps = [
+        `Step 1: Evaluate the first parenthesis (${p1} + ${p2}) = ${p1 + p2}`,
+        `Step 2: Evaluate the second parenthesis (${p3} - ${p4}) = ${p3 - p4}`,
+        `Step 3: Multiply the results ${p1 + p2} × ${p3 - p4} = ${correctAnswer}`
+      ];
       
       // Common mistakes: not using parentheses properly
       commonMistakeAnswers = [
@@ -51,6 +62,13 @@ const generateProblem = (): MathProblem => {
       question = `${base1}^${exp1} + (${n1} × ${n2})`;
       correctAnswer = Math.pow(base1, exp1) + (n1 * n2);
       
+      // Solution steps
+      steps = [
+        `Step 1: Calculate the exponent ${base1}^${exp1} = ${Math.pow(base1, exp1)}`,
+        `Step 2: Evaluate the parenthesis (${n1} × ${n2}) = ${n1 * n2}`,
+        `Step 3: Add the results ${Math.pow(base1, exp1)} + ${n1 * n2} = ${correctAnswer}`
+      ];
+      
       // Common mistakes: exponent rules
       commonMistakeAnswers = [
         Math.pow(base1, exp1 + (n1 * n2)), // added exponent to the product instead
@@ -68,6 +86,14 @@ const generateProblem = (): MathProblem => {
       question = `${m1} + ${m2} × ${m3} - ${m4}`;
       correctAnswer = m1 + (m2 * m3) - m4;
       
+      // Solution steps
+      steps = [
+        `Step 1: Perform multiplication first ${m2} × ${m3} = ${m2 * m3}`,
+        `Step 2: Perform addition and subtraction left to right: ${m1} + ${m2 * m3} - ${m4}`,
+        `Step 3: ${m1} + ${m2 * m3} = ${m1 + (m2 * m3)}`,
+        `Step 4: ${m1 + (m2 * m3)} - ${m4} = ${correctAnswer}`
+      ];
+      
       // Common mistakes: incorrect order of operations
       commonMistakeAnswers = [
         (m1 + m2) * m3 - m4, // addition before multiplication
@@ -83,6 +109,13 @@ const generateProblem = (): MathProblem => {
       
       question = `${a}^2 × ${b} + ${c} × ${a}`;
       correctAnswer = Math.pow(a, 2) * b + c * a;
+      
+      // Solution steps
+      steps = [
+        `Step 1: Calculate the exponent ${a}^2 = ${Math.pow(a, 2)}`,
+        `Step 2: Perform both multiplications: ${Math.pow(a, 2)} × ${b} = ${Math.pow(a, 2) * b}, and ${c} × ${a} = ${c * a}`,
+        `Step 3: Add the results: ${Math.pow(a, 2) * b} + ${c * a} = ${correctAnswer}`
+      ];
       
       // Common mistakes: exponent and multiplication order
       commonMistakeAnswers = [
@@ -279,6 +312,13 @@ const generateProblem = (): MathProblem => {
       question = `(${div1} × ${div2}) ÷ ${div3} + ${div4}`;
       correctAnswer = (product / div3) + div4;
       
+      // Solution steps
+      steps = [
+        `Step 1: Evaluate the parenthesis (${div1} × ${div2}) = ${product}`,
+        `Step 2: Perform the division ${product} ÷ ${div3} = ${product / div3}`,
+        `Step 3: Add the last number ${product / div3} + ${div4} = ${correctAnswer}`
+      ];
+      
       // Common mistakes: incorrect order with division
       commonMistakeAnswers = [
         div1 * div2 / (div3 + div4), // applied division to the addition
@@ -298,6 +338,13 @@ const generateProblem = (): MathProblem => {
       
       question = `${md1} + (${md2} × ${md3}) ÷ ${md4}`;
       correctAnswer = md1 + ((md2 * md3) / md4);
+      
+      // Solution steps
+      steps = [
+        `Step 1: Evaluate the parenthesis (${md2} × ${md3}) = ${mProduct}`,
+        `Step 2: Perform the division ${mProduct} ÷ ${md4} = ${mProduct / md4}`,
+        `Step 3: Add with the first number ${md1} + ${mProduct / md4} = ${correctAnswer}`
+      ];
       
       // Common mistakes: division order errors
       commonMistakeAnswers = [
@@ -326,6 +373,13 @@ const generateProblem = (): MathProblem => {
       
       question = `${adjustedNd1} ÷ (${nd2} + ${nd3}) × ${nd4}`;
       correctAnswer = (adjustedNd1 / denominator) * nd4;
+      
+      // Solution steps
+      steps = [
+        `Step 1: Evaluate the parenthesis (${nd2} + ${nd3}) = ${denominator}`,
+        `Step 2: Perform the division ${adjustedNd1} ÷ ${denominator} = ${adjustedNd1 / denominator}`,
+        `Step 3: Multiply by the last number ${adjustedNd1 / denominator} × ${nd4} = ${correctAnswer}`
+      ];
       
       // Common mistakes: incorrect division order
       commonMistakeAnswers = [
@@ -377,7 +431,7 @@ const generateProblem = (): MathProblem => {
     return generateProblem(); // Try again if we have duplicates
   }
   
-  return { question, options, correctAnswer, commonMistakeAnswers };
+  return { question, options, correctAnswer, commonMistakeAnswers, steps };
 };
 
 const GameScreen = ({ onComplete }: GameScreenProps) => {
@@ -388,6 +442,8 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
   const [mistakes, setMistakes] = useState(0);
   const [ingredients, setIngredients] = useState<{type: string, animation: string}[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   
   // Initialize problems
   useEffect(() => {
@@ -421,9 +477,33 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
       setSelectedAnswer(null);
       setIsCorrect(null);
       setShowFeedback(false);
+      setShowSolution(false);
+      setCurrentStepIndex(0);
     } else {
       onComplete(mistakes);
     }
+  };
+
+  const handleShowSolution = () => {
+    setShowSolution(true);
+    setCurrentStepIndex(0);
+  };
+
+  const handleNextStep = () => {
+    if (currentStepIndex < problems[currentProblemIndex].steps.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(currentStepIndex - 1);
+    }
+  };
+
+  const handleCloseSolution = () => {
+    setShowSolution(false);
+    setCurrentStepIndex(0);
   };
   
   if (problems.length === 0) {
@@ -477,9 +557,15 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
               <div>Oops! A silly ingredient falls in!</div>
             )}
             
-            <Button onClick={handleNext} className="mt-4 magical-button">
-              {currentProblemIndex < problems.length - 1 ? 'Next Problem' : 'See Your Potion'}
-            </Button>
+            <div className="flex justify-center gap-4 mt-4">
+              <Button onClick={handleShowSolution} className="bg-magic-blue hover:bg-magic-blue/80">
+                {isCorrect ? "See Solution" : "Learn Correct Solution"}
+              </Button>
+              
+              <Button onClick={handleNext} className="magical-button">
+                {currentProblemIndex < problems.length - 1 ? 'Next Problem' : 'See Your Potion'}
+              </Button>
+            </div>
           </div>
         )}
       </Card>
@@ -535,6 +621,106 @@ const GameScreen = ({ onComplete }: GameScreenProps) => {
           </p>
         </div>
       </div>
+
+      {/* Solution Dialog */}
+      <Dialog open={showSolution} onOpenChange={handleCloseSolution}>
+        <DialogContent className="max-w-3xl bg-white/95 border-2 border-magic-purple">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-magic-dark-purple font-bold">
+              {isCorrect ? "Solution Overview" : "Let's Learn How to Solve This"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="p-4 bg-white/80 rounded-lg shadow-inner">
+            <div className="text-xl font-bold text-center mb-4 text-magic-dark-purple">
+              {currentProblem.question} = {currentProblem.correctAnswer}
+            </div>
+            
+            <div className="bg-magic-light-purple/30 p-4 rounded-lg mb-4">
+              <p className="font-semibold text-magic-dark-purple mb-2">
+                Remember PEMDAS:
+              </p>
+              <div className="flex flex-wrap justify-around gap-2 text-center">
+                <div className="flex items-center gap-1">
+                  <Parentheses className="h-5 w-5" />
+                  <span>Parentheses</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>E</span>
+                  <span>xponents</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Multiply className="h-5 w-5" />
+                  <Divide className="h-5 w-5" />
+                  <span>Multiplication/Division</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Plus className="h-5 w-5" />
+                  <Minus className="h-5 w-5" />
+                  <span>Addition/Subtraction</span>
+                </div>
+              </div>
+            </div>
+            
+            {isCorrect ? (
+              /* Quick overview for correct answers */
+              <div className="space-y-2">
+                {currentProblem.steps.map((step, index) => (
+                  <div key={index} className="p-2 bg-magic-light-purple/20 rounded">
+                    {step}
+                  </div>
+                ))}
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={handleCloseSolution} className="bg-magic-dark-purple hover:bg-magic-dark-purple/80">
+                    Got it!
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              /* Step-by-step interactive learning for incorrect answers */
+              <div className="space-y-4">
+                <div className="p-4 bg-white rounded-lg shadow border border-magic-purple">
+                  {currentStepIndex < currentProblem.steps.length ? (
+                    <div className="text-lg font-medium">
+                      {currentProblem.steps[currentStepIndex]}
+                    </div>
+                  ) : (
+                    <div className="text-lg font-medium text-green-700">
+                      Now you know how to get the correct answer: {currentProblem.correctAnswer}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex justify-between items-center mt-6">
+                  <Button 
+                    onClick={handlePreviousStep}
+                    disabled={currentStepIndex === 0}
+                    className="bg-magic-purple hover:bg-magic-purple/80"
+                  >
+                    Previous Step
+                  </Button>
+                  
+                  {currentStepIndex < currentProblem.steps.length - 1 ? (
+                    <Button 
+                      onClick={handleNextStep}
+                      className="bg-magic-dark-purple hover:bg-magic-dark-purple/80"
+                    >
+                      Next Step
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleCloseSolution}
+                      className="bg-magic-green hover:bg-magic-green/80"
+                    >
+                      I Understand
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
